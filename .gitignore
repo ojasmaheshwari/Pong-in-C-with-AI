@@ -3,3 +3,6 @@
 
 # No ignore assets folder
 !/build/assets
+
+# vscode editor folder
+/.vs
