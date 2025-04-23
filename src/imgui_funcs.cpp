@@ -13,7 +13,7 @@ void Imgui_init_once()
     ImGui_ImplOpenGL3_Init("#version 130");
 }
 
-void pong_engine(int &playerHeight, float &ballSpeed, float &movementSpeed, int &MAX_FPS, bool &competitive, bool &gamePaused, float ball_x, float ball_y, float count, float predicted_y, bool &bot)
+void pong_engine(float &playerHeight, float &ballSpeed, float &movementSpeed, int &MAX_FPS, bool &competitive, bool &gamePaused, float ball_x, float ball_y, float count, float predicted_y, bool &bot)
 {
     // std::cout << "x: " << ball_x << '\n';
     if (gamePaused)
@@ -29,7 +29,7 @@ void pong_engine(int &playerHeight, float &ballSpeed, float &movementSpeed, int 
         ImGui::Value("ball y: ", ball_y);
         if (bot)
             ImGui::Value("Bot predicted y: ", predicted_y);
-        ImGui::SliderInt("Player Height", &(playerHeight), 0, 300);
+        ImGui::SliderFloat("Player Height", &(playerHeight), 0, 300);
         ImGui::SliderFloat("Ball speed", &(ballSpeed), 0, 20);
         ImGui::SliderFloat("Player speed", &(movementSpeed), 0, 200);
         ImGui::SliderInt("Max FPS", &(MAX_FPS), 0, 200);

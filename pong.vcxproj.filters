@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\worko\source\repos\Pong-in-C-with-AI\src\bot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\worko\source\repos\Pong-in-C-with-AI\src\imgui_funcs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\worko\source\repos\Pong-in-C-with-AI\src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\imgui\imgui.cpp" />
+    <ClCompile Include="src\imgui\imgui_draw.cpp" />
+    <ClCompile Include="src\imgui\imgui_tables.cpp" />
+    <ClCompile Include="src\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="src\imgui\imgui-SFML.cpp" />
+    <ClCompile Include="src\imgui\imgui_impl_opengl3.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\worko\source\repos\Pong-in-C-with-AI\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4099E386-20D0-3441-862C-2113178740AF}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\include\imgui_funcs.h" />
+    <ClInclude Include="src\include\bot.h" />
+  </ItemGroup>
+</Project>

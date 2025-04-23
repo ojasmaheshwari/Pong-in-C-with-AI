@@ -1,0 +1,10 @@
+^C:\USERS\WORKO\SOURCE\REPOS\PONG-IN-C-WITH-AI\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/worko/source/repos/Pong-in-C-with-AI -BC:/Users/worko/source/repos/Pong-in-C-with-AI --check-stamp-file C:/Users/worko/source/repos/Pong-in-C-with-AI/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

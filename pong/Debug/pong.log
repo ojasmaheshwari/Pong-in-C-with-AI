@@ -1,0 +1,2 @@
+﻿  imgui_impl_opengl3.cpp
+pong\Debug\bot.obj : fatal error LNK1112: module machine type 'x86' conflicts with target machine type 'x64'

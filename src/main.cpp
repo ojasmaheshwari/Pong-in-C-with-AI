@@ -2,18 +2,18 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <cstdlib>
-#include <math.h>
-#include <time.h>
+#include <cmath>
+#include <ctime>
 #include <imgui.h>
 #include <imgui_funcs.h>
 #include <imgui-SFML.h>
 #include <bot.h>
 
 // Globals
-int SCREEN_WIDTH = 800;
-int SCREEN_HEIGHT = 600;
-int playerWidth = 30;
-int playerHeight = 150;
+unsigned int SCREEN_WIDTH = 800.0f;
+unsigned int SCREEN_HEIGHT = 600.0f;
+float playerWidth = 30;
+float playerHeight = 150;
 float movementSpeed = 8;
 float ballSpeed = 8;
 auto ballUnitVector = sf::Vector2f(1, -1);
@@ -23,7 +23,7 @@ bool PLYR_1_MOV_DOWN_ENABLED = true;
 bool PLYR_2_MOV_DOWN_ENABLED = true;
 bool gameOver = false;
 bool competitive = false;
-bool gamePaused = true;
+bool gamePaused = false;
 bool bot = false;
 int winner;
 int loser;
@@ -57,7 +57,7 @@ sf::RectangleShape drawWall(const sf::Vector2f &size, sf::Vector2f pos)
 
 sf::Text drawText(std::string content, sf::Vector2f pos, int charSize, sf::Font &font)
 {
-    auto text = sf::Text();
+    auto text = sf::Text(font);
     text.setString(content);
     text.setPosition(pos);
     text.setCharacterSize(charSize);
@@ -101,7 +101,7 @@ void gameLoop(sf::RenderWindow &window, sf::RectangleShape &player1, sf::Rectang
         window.display();
 
         // Restart game on enter key
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter))
         {
             gameOver = false;
             ball.setPosition(sf::Vector2f(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2));
@@ -112,35 +112,41 @@ void gameLoop(sf::RenderWindow &window, sf::RectangleShape &player1, sf::Rectang
         if (!gamePaused)
         {
             // check player movement
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
             {
-                player1.move(0, -movementSpeed);
+                player1.move({ 0, -movementSpeed });
             }
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && PLYR_1_MOV_DOWN_ENABLED)
-                player1.move(0, movementSpeed);
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S) && PLYR_1_MOV_DOWN_ENABLED)
+                player1.move({0, movementSpeed
+        });
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up))
             {
-                player2.move(0, -movementSpeed);
+                player2.move({0, -movementSpeed
+            });
             }
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && PLYR_2_MOV_DOWN_ENABLED)
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down) && PLYR_2_MOV_DOWN_ENABLED)
             {
-                player2.move(0, movementSpeed);
+                player2.move({0, movementSpeed
+            });
             }
 
             // check if player hits boundary, if yes then block player
-            if (player1.getGlobalBounds().intersects(wallBottom.getGlobalBounds()))
-            {
+            auto intersection = player1.getGlobalBounds().findIntersection(wallBottom.getGlobalBounds());
+            if (intersection) {
                 PLYR_1_MOV_DOWN_ENABLED = false;
             }
             else
             {
                 PLYR_1_MOV_DOWN_ENABLED = true;
             }
+
             if (player1.getPosition().y <= 0)
             {
-                player1.setPosition(player1.getPosition().x, 0);
+                player1.setPosition({ player1.getPosition().x, 0 });
             }
-            if (player2.getGlobalBounds().intersects(wallBottom.getGlobalBounds()))
+
+            intersection = player2.getGlobalBounds().findIntersection(wallBottom.getGlobalBounds());
+            if (intersection)
             {
                 PLYR_2_MOV_DOWN_ENABLED = false;
             }
@@ -148,16 +154,18 @@ void gameLoop(sf::RenderWindow &window, sf::RectangleShape &player1, sf::Rectang
             {
                 PLYR_2_MOV_DOWN_ENABLED = true;
             }
+
             if (player2.getPosition().y <= 0)
             {
-                player2.setPosition(player2.getPosition().x, 0);
+                player2.setPosition({ player2.getPosition().x, 0 });
             }
 
             // make the ball move in direction of unit velocity vector with speed = ballSpeed
             ball.move(ballSpeed * ballUnitVector);
 
             // check collision between ball and player
-            if (ball.getGlobalBounds().intersects(player2.getGlobalBounds()))
+            intersection = player2.getGlobalBounds().findIntersection(ball.getGlobalBounds());
+            if (intersection)
             {
                 ballUnitVector.x *= -1;
                 if (competitive)
@@ -166,7 +174,9 @@ void gameLoop(sf::RenderWindow &window, sf::RectangleShape &player1, sf::Rectang
                     movementSpeed += 0.25;
                 }
             }
-            if (ball.getGlobalBounds().intersects(player1.getGlobalBounds()))
+
+            intersection = player1.getGlobalBounds().findIntersection(ball.getGlobalBounds());
+            if (intersection)
             {
                 ballUnitVector.x *= -1;
                 if (competitive)
@@ -177,7 +187,8 @@ void gameLoop(sf::RenderWindow &window, sf::RectangleShape &player1, sf::Rectang
             }
 
             // check collision between ball and right/left walls (game over)
-            if (ball.getGlobalBounds().intersects(wallLeft.getGlobalBounds()))
+            intersection = ball.getGlobalBounds().findIntersection(wallLeft.getGlobalBounds());
+            if (intersection)
             {
                 std::cout << "Game over, player 2 won!\n";
                 winner = 1;
@@ -194,7 +205,9 @@ void gameLoop(sf::RenderWindow &window, sf::RectangleShape &player1, sf::Rectang
                 }
                 gameOver = true;
             }
-            if (ball.getGlobalBounds().intersects(wallRight.getGlobalBounds()))
+
+            intersection = ball.getGlobalBounds().findIntersection(wallRight.getGlobalBounds());
+            if (intersection)
             {
                 std::cout << "Game over, player 1 won!\n";
                 if (bot) {
@@ -214,18 +227,21 @@ void gameLoop(sf::RenderWindow &window, sf::RectangleShape &player1, sf::Rectang
 
             // check collision between ball and top/bottom walls
             // if yes then reflect ball, simply invert y component of ball's unit vector
-            if (ball.getGlobalBounds().intersects(wallTop.getGlobalBounds()))
+            intersection = ball.getGlobalBounds().findIntersection(wallTop.getGlobalBounds());
+            if (intersection)
             {
                 ballUnitVector.y *= -1;
             }
-            if (ball.getGlobalBounds().intersects(wallBottom.getGlobalBounds()))
+
+            intersection = ball.getGlobalBounds().findIntersection(wallBottom.getGlobalBounds());
+            if (intersection)
             {
                 ballUnitVector.y *= -1;
             }
 
             // check if esc key pressed
             // if yes then pause the game
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape))
                 gamePaused = true;
 
             // Update some game objects
@@ -240,7 +256,7 @@ void gameLoop(sf::RenderWindow &window, sf::RectangleShape &player1, sf::Rectang
 
         if (finalPos > 0)
         {
-            player2.setPosition(SCREEN_WIDTH - playerWidth, finalPos - playerHeight / 2);
+            player2.setPosition({ (float)(SCREEN_WIDTH - playerWidth), finalPos - playerHeight / 2.0f });
         }
 
         // Draw game objects onto screen
@@ -274,22 +290,22 @@ int main()
     // ballUnitVector.y *= rand_speed_multiplier_y;
 
     // Initialization of game objects
-    sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Pong");
+    sf::RenderWindow window(sf::VideoMode({ SCREEN_WIDTH, SCREEN_HEIGHT }), "Pong");
     auto player1 = drawPlayer(sf::Vector2f(playerWidth, playerHeight), sf::Color(sf::Color::White), sf::Vector2f(0, (SCREEN_HEIGHT - playerHeight) / 2));
     auto player2 = drawPlayer(sf::Vector2f(playerWidth, playerHeight), sf::Color(sf::Color::White), sf::Vector2f((SCREEN_WIDTH - playerWidth), (SCREEN_HEIGHT - playerHeight) / 2));
     auto ball = drawBall(10, sf::Color(sf::Color::White), sf::Vector2f(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2));
-    ball.setOrigin(10, 10);
+    ball.setOrigin({ 10, 10 });
     auto wallLeft = drawWall(sf::Vector2f(1, SCREEN_HEIGHT), sf::Vector2f(0, 0));
     auto wallRight = drawWall(sf::Vector2f(1, SCREEN_HEIGHT), sf::Vector2f(SCREEN_WIDTH, 0));
     auto wallTop = drawWall(sf::Vector2f(SCREEN_WIDTH, 1), sf::Vector2f(0, 0));
     auto wallBottom = drawWall(sf::Vector2f(SCREEN_WIDTH, 1), sf::Vector2f(0, SCREEN_HEIGHT));
     sf::Font font;
-    font.loadFromFile("assets/font.ttf");
+    font.openFromFile("assets/font.ttf");
     auto gameOverText = drawText("Game Over Lil Bro!", sf::Vector2f(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 100), 50, font);
-    gameOverText.setOrigin(gameOverText.getGlobalBounds().getSize() / 2.f + gameOverText.getLocalBounds().getPosition());
+    gameOverText.setOrigin(gameOverText.getGlobalBounds().size / 2.f + gameOverText.getLocalBounds().position);
     auto winDescription = drawText("", sf::Vector2f(SCREEN_WIDTH / 2 - 200, SCREEN_HEIGHT / 2 - 30), 20, font);
     auto player1_winc_label = drawText("Player 1: ", {50, 20}, 25, font);
-    auto player2_winc_label = drawText("Player 2: ", {(SCREEN_WIDTH - 150), 20}, 25, font);
+    auto player2_winc_label = drawText("Player 2: ", {(SCREEN_WIDTH - 150.0f), 20.0f}, 25, font);
 
     ImGui::SFML::Init(window);
 
@@ -301,22 +317,24 @@ int main()
     while (window.isOpen() && gameRunning)
     {
         // check all the window's events that were triggered since the last iteration of the loop
-        sf::Event event;
-        while (window.pollEvent(event))
-        {
-            ImGui::SFML::ProcessEvent(window, event);
-            switch (event.type)
-            {
-            // window closed
-            case sf::Event::Closed:
-                window.close();
-                break;
-
-            // we don't process other types of events
-            default:
+		while (const std::optional event = window.pollEvent())
+		{
+			if (event->is<sf::Event::Closed>())
+			{
+				window.close();
+			}
+			else if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
+			{
+                if (keyPressed->scancode == sf::Keyboard::Scancode::Escape)
+                    gamePaused = !gamePaused;
+                else {
+                    break;
+                }
+            }
+            else {
                 break;
             }
-        }
+		}
 
         // Main game loop
         gameLoop(window, player1, player2, ball, wallLeft, wallRight, wallTop, wallBottom, gameOverText, winDescription, deltaClock, player1_winc_label, player2_winc_label);
